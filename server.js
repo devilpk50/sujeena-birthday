@@ -19,16 +19,8 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use('/uploads', express.static(uploadDir));
 
-// Configure Multer for image uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// Configure Multer for in-memory image uploads
+const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
     limits: { fileSize: 5 * 1024 * 1024 },
@@ -41,6 +33,46 @@ const upload = multer({
         }
     }
 });
+
+// Helper function to handle image upload persistently (Imgbb) or locally
+async function handleImageUpload(file) {
+    if (!file) return null;
+
+    const apiKey = process.env.IMGBB_API_KEY;
+    if (apiKey) {
+        try {
+            console.log('Uploading image to Imgbb...');
+            const body = new URLSearchParams();
+            body.append('image', file.buffer.toString('base64'));
+
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                method: 'POST',
+                body: body,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+
+            const result = await response.json();
+            if (result.success && result.data && result.data.url) {
+                console.log('Imgbb upload successful:', result.data.url);
+                return result.data.url;
+            } else {
+                console.error('Imgbb upload failed:', result);
+            }
+        } catch (err) {
+            console.error('Imgbb upload error:', err.message);
+        }
+    }
+
+    // Fallback: Save locally if no API key or upload failed
+    console.log('Saving image locally...');
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const filename = uniqueSuffix + path.extname(file.originalname);
+    const filepath = path.join(uploadDir, filename);
+    await fs.promises.writeFile(filepath, file.buffer);
+    return `/uploads/${filename}`;
+}
 
 // Database Setup
 const db = require('./database');
@@ -135,10 +167,7 @@ app.post('/api/messages', (req, res) => {
             return;
         }
 
-        let photoUrl = null;
-        if (req.file) {
-            photoUrl = `/uploads/${req.file.filename}`;
-        }
+        const photoUrl = await handleImageUpload(req.file);
 
         const editToken = crypto.randomUUID();
         try {
@@ -174,7 +203,6 @@ app.put('/api/messages/:id', (req, res) => {
         verifyEditToken(req, res, async (existing) => {
             const validated = validateMessageFields(req.body.name, req.body.relation, req.body.message);
             if (validated.error) {
-                if (req.file) deletePhotoFile(`/uploads/${req.file.filename}`);
                 res.status(400).json({ error: validated.error });
                 return;
             }
@@ -184,7 +212,7 @@ app.put('/api/messages/:id', (req, res) => {
 
             if (req.file) {
                 if (existing.photoUrl) deletePhotoFile(existing.photoUrl);
-                photoUrl = `/uploads/${req.file.filename}`;
+                photoUrl = await handleImageUpload(req.file);
             } else if (removePhoto && existing.photoUrl) {
                 deletePhotoFile(existing.photoUrl);
                 photoUrl = null;
