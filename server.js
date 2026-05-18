@@ -1,5 +1,4 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
@@ -44,29 +43,8 @@ const upload = multer({
 });
 
 // Database Setup
-const dbDir = path.join(__dirname, '.data');
-if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir);
-}
-const dbPath = path.join(dbDir, 'messages.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error opening database', err.message);
-    } else {
-        console.log('Connected to the SQLite database.');
-        // Create table if it doesn't exist
-        db.run(`CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            relation TEXT NOT NULL,
-            message TEXT NOT NULL,
-            photoUrl TEXT,
-            editToken TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`);
-        db.run(`ALTER TABLE messages ADD COLUMN editToken TEXT`, () => {});
-    }
-});
+const db = require('./database');
+db.initDb().catch(err => console.error('Database initialization failed:', err));
 
 const ALLOWED_RELATIONS = ['Family', 'Friend', 'Colleague'];
 const NAME_PATTERN = /^[\p{L}\p{M}'\s.\-]{2,50}$/u;
@@ -107,18 +85,15 @@ function deletePhotoFile(photoUrl) {
     fs.unlink(filePath, () => {});
 }
 
-function verifyEditToken(req, res, callback) {
+async function verifyEditToken(req, res, callback) {
     const id = req.params.id;
     const token = req.body.editToken || req.headers['x-edit-token'];
     if (!token) {
         res.status(403).json({ error: 'You can only edit or delete your own posts from this device.' });
         return;
     }
-    db.get(`SELECT * FROM messages WHERE id = ?`, [id], (err, row) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
+    try {
+        const row = await db.getMessageById(id);
         if (!row) {
             res.status(404).json({ error: 'Message not found.' });
             return;
@@ -128,24 +103,24 @@ function verifyEditToken(req, res, callback) {
             return;
         }
         callback(row);
-    });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 // API Route: Get all messages (editToken never exposed)
-app.get('/api/messages', (req, res) => {
-    const sql = `SELECT id, name, relation, message, photoUrl, timestamp FROM messages ORDER BY timestamp ASC`;
-    db.all(sql, [], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
+app.get('/api/messages', async (req, res) => {
+    try {
+        const rows = await db.getMessages();
         res.json({ message: 'success', data: rows });
-    });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // API Route: Post a new message
 app.post('/api/messages', (req, res) => {
-    upload.single('photo')(req, res, (err) => {
+    upload.single('photo')(req, res, async (err) => {
         if (err) {
             const msg = err.code === 'LIMIT_FILE_SIZE'
                 ? 'Photo is too large. Maximum size is 5MB.'
@@ -166,33 +141,28 @@ app.post('/api/messages', (req, res) => {
         }
 
         const editToken = crypto.randomUUID();
-        const sql = `INSERT INTO messages (name, relation, message, photoUrl, editToken) VALUES (?, ?, ?, ?, ?)`;
-        const params = [validated.trimmedName, validated.trimmedRelation, validated.trimmedMessage, photoUrl, editToken];
-
-        db.run(sql, params, function (runErr) {
-            if (runErr) {
-                res.status(500).json({ error: runErr.message });
-                return;
-            }
+        try {
+            const messageData = await db.createMessage(
+                validated.trimmedName,
+                validated.trimmedRelation,
+                validated.trimmedMessage,
+                photoUrl,
+                editToken
+            );
             res.json({
                 message: 'success',
-                data: {
-                    id: this.lastID,
-                    name: validated.trimmedName,
-                    relation: validated.trimmedRelation,
-                    message: validated.trimmedMessage,
-                    photoUrl,
-                    timestamp: new Date().toISOString()
-                },
+                data: messageData,
                 editToken
             });
-        });
+        } catch (runErr) {
+            res.status(500).json({ error: runErr.message });
+        }
     });
 });
 
 // API Route: Update a message (creator only)
 app.put('/api/messages/:id', (req, res) => {
-    upload.single('photo')(req, res, (err) => {
+    upload.single('photo')(req, res, async (err) => {
         if (err) {
             const msg = err.code === 'LIMIT_FILE_SIZE'
                 ? 'Photo is too large. Maximum size is 5MB.'
@@ -201,7 +171,7 @@ app.put('/api/messages/:id', (req, res) => {
             return;
         }
 
-        verifyEditToken(req, res, (existing) => {
+        verifyEditToken(req, res, async (existing) => {
             const validated = validateMessageFields(req.body.name, req.body.relation, req.body.message);
             if (validated.error) {
                 if (req.file) deletePhotoFile(`/uploads/${req.file.filename}`);
@@ -220,18 +190,14 @@ app.put('/api/messages/:id', (req, res) => {
                 photoUrl = null;
             }
 
-            const sql = `UPDATE messages SET name = ?, relation = ?, message = ?, photoUrl = ? WHERE id = ?`;
-            db.run(sql, [
-                validated.trimmedName,
-                validated.trimmedRelation,
-                validated.trimmedMessage,
-                photoUrl,
-                existing.id
-            ], (runErr) => {
-                if (runErr) {
-                    res.status(500).json({ error: runErr.message });
-                    return;
-                }
+            try {
+                await db.updateMessage(
+                    existing.id,
+                    validated.trimmedName,
+                    validated.trimmedRelation,
+                    validated.trimmedMessage,
+                    photoUrl
+                );
                 res.json({
                     message: 'success',
                     data: {
@@ -243,22 +209,23 @@ app.put('/api/messages/:id', (req, res) => {
                         timestamp: existing.timestamp
                     }
                 });
-            });
+            } catch (runErr) {
+                res.status(500).json({ error: runErr.message });
+            }
         });
     });
 });
 
 // API Route: Delete a message (creator only)
 app.delete('/api/messages/:id', (req, res) => {
-    verifyEditToken(req, res, (existing) => {
-        db.run(`DELETE FROM messages WHERE id = ?`, [existing.id], (runErr) => {
-            if (runErr) {
-                res.status(500).json({ error: runErr.message });
-                return;
-            }
+    verifyEditToken(req, res, async (existing) => {
+        try {
+            await db.deleteMessage(existing.id);
             if (existing.photoUrl) deletePhotoFile(existing.photoUrl);
             res.json({ message: 'success' });
-        });
+        } catch (runErr) {
+            res.status(500).json({ error: runErr.message });
+        }
     });
 });
 
