@@ -1,0 +1,23 @@
+{
+  "install": {
+    "include": [
+      "^package\\.json$",
+      "^\\.env$"
+    ]
+  },
+  "restart": {
+    "exclude": [
+      "^uploads/",
+      "^\\.data/",
+      "^messages\\.db",
+      "^.*\\.db$"
+    ],
+    "include": [
+      "\\.js$",
+      "\\.json$",
+      "\\.html$",
+      "\\.css$"
+    ]
+  },
+  "throttle": 1000
+}
