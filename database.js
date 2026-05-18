@@ -91,14 +91,29 @@ async function initDb() {
     }
 }
 
+// Helper to normalize column names from database engines (PostgreSQL returns lowercase keys)
+function normalizeRow(row) {
+    if (!row) return null;
+    return {
+        id: row.id,
+        name: row.name,
+        relation: row.relation,
+        message: row.message,
+        photoUrl: row.photourl !== undefined ? row.photourl : row.photoUrl,
+        editToken: row.edittoken !== undefined ? row.edittoken : row.editToken,
+        timestamp: row.timestamp
+    };
+}
+
 // 2. Get All Messages (editToken omitted for security)
 async function getMessages() {
     const sql = `SELECT id, name, relation, message, photoUrl, timestamp FROM messages ORDER BY timestamp ASC`;
     if (isPostgres) {
         const res = await dbClient.query(sql);
-        return res.rows;
+        return res.rows.map(normalizeRow);
     } else {
-        return await dbClient.all(sql);
+        const rows = await dbClient.all(sql);
+        return rows.map(normalizeRow);
     }
 }
 
@@ -106,9 +121,10 @@ async function getMessages() {
 async function getMessageById(id) {
     if (isPostgres) {
         const res = await dbClient.query(`SELECT * FROM messages WHERE id = $1`, [id]);
-        return res.rows[0] || null;
+        return normalizeRow(res.rows[0]);
     } else {
-        return await dbClient.get(`SELECT * FROM messages WHERE id = ?`, [id]);
+        const row = await dbClient.get(`SELECT * FROM messages WHERE id = ?`, [id]);
+        return normalizeRow(row);
     }
 }
 
