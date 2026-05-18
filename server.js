@@ -38,34 +38,15 @@ const upload = multer({
 async function handleImageUpload(file) {
     if (!file) return null;
 
-    const apiKey = process.env.IMGBB_API_KEY;
-    if (apiKey) {
-        try {
-            console.log('Uploading image to Imgbb...');
-            const body = new URLSearchParams();
-            body.append('image', file.buffer.toString('base64'));
-
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                method: 'POST',
-                body: body,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            });
-
-            const result = await response.json();
-            if (result.success && result.data && result.data.url) {
-                console.log('Imgbb upload successful:', result.data.url);
-                return result.data.url;
-            } else {
-                console.error('Imgbb upload failed:', result);
-            }
-        } catch (err) {
-            console.error('Imgbb upload error:', err.message);
-        }
+    // If we are in production (connected to Neon Cloud Database), store the image directly as a Base64 string!
+    if (process.env.DATABASE_URL) {
+        console.log('Production mode: Encoding image as Base64 to store in Neon Database...');
+        const base64Data = file.buffer.toString('base64');
+        const mimeType = file.mimetype || 'image/jpeg';
+        return `data:${mimeType};base64,${base64Data}`;
     }
 
-    // Fallback: Save locally if no API key or upload failed
+    // Fallback/Local Development: Save locally to /uploads/
     console.log('Saving image locally...');
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const filename = uniqueSuffix + path.extname(file.originalname);
