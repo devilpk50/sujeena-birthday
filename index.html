@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sujeena! 🎉</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Pacifico&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-bs-theme="light" data-wall-page="preview">
+    <!-- Floating sparkles background -->
+    <div id="sparkle-layer" aria-hidden="true"></div>
+
+    <!-- Welcome surprise overlay -->
+    <div id="welcome-overlay" class="welcome-overlay">
+        <div class="welcome-content text-center">
+            <div class="gift-box" id="giftBox">
+                <div class="gift-lid"></div>
+                <div class="gift-body">
+                    <span class="gift-ribbon">🎀</span>
+                </div>
+            </div>
+            <h2 class="font-pacifico welcome-title mt-4">A Surprise for Sujeena!</h2>
+            <p class="font-outfit text-light-opacity mb-4">Tap the gift to unwrap your birthday magic ✨</p>
+            <button type="button" class="btn btn-custom btn-lg font-outfit" id="openGiftBtn">
+                <i class="bi bi-gift-fill me-2"></i> Open Surprise
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating balloons (click to pop!) -->
+    <div id="balloon-field" aria-hidden="true"></div>
+
+    <!-- Surprise FAB -->
+    <button type="button" class="surprise-fab font-outfit" id="surpriseFab" title="Surprise!">
+        <i class="bi bi-stars"></i>
+        <span class="surprise-fab-label">Surprise!</span>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+        <div class="container">
+            <a class="navbar-brand font-playfair" href="#">S.S</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="wall-of-love.html">Wall of Love</a></li>
+                </ul>
+                <div class="d-flex mt-3 mt-lg-0">
+                    <a href="wall-of-love.html" class="btn btn-custom btn-sm ms-lg-3" style="padding: 10px 20px;">Write a Message</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Canvas for Confetti -->
+    <canvas id="confetti"></canvas>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section d-flex align-items-center">
+        <div class="container text-center text-lg-start position-relative z-1">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6 hero-text reveal-left">
+                    <div class="birthday-badge font-outfit mb-3">
+                        <i class="bi bi-balloon-heart-fill me-2"></i> July 31st · Birthday Queen
+                    </div>
+                    <h2 class="text-accent font-outfit text-uppercase tracking-wide mb-2">A Day Made for You</h2>
+                    <h1 class="display-1 font-playfair fw-bold mb-3">Happy Birthday,<br><span
+                            class="text-gradient shimmer-text">Sujeena!</span></h1>
+                    <p class="lead text-light-opacity mb-2 font-outfit" id="typed-wish"></p>
+                    <p class="text-light-opacity small font-outfit mb-4">
+                        <i class="bi bi-hand-index-thumb me-1"></i> Pop the balloons · Blow the candles · Tap Surprise!
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <a href="#cake-section" class="btn btn-custom btn-lg font-outfit shadow-glow">
+                            <i class="bi bi-cake2-fill me-2"></i> Make a Wish
+                        </a>
+                        <a href="wall-of-love.html" class="btn btn-outline-custom btn-lg font-outfit">
+                            Wall of Love <i class="bi bi-envelope-heart ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-5 mt-lg-0 reveal-right">
+                    <div class="hero-visual-stack position-relative">
+                        <div class="mini-cake-float" aria-hidden="true">
+                            <div class="cake-scene cake-scene--mini">
+                                <div class="cake-plate"></div>
+                                <div class="cake-layer cake-layer--3"></div>
+                                <div class="cake-layer cake-layer--2"></div>
+                                <div class="cake-layer cake-layer--1"></div>
+                                <div class="cake-candles">
+                                    <div class="candle"><div class="flame"></div></div>
+                                    <div class="candle"><div class="flame"></div></div>
+                                    <div class="candle"><div class="flame"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="image-wrapper position-relative">
+                            <div class="glow-backdrop"></div>
+                            <img src="sujeena.jpg" alt="Sujeena" class="img-fluid hero-image shadow-lg">
+                            <div class="hero-sparkle-ring"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="bi bi-mouse"></i>
+            <span class="d-block mt-2 small text-uppercase tracking-wider">Scroll</span>
+        </div>
+    </section>
+
+    <!-- Interactive Birthday Cake -->
+    <section id="cake-section" class="cake-section section-padding">
+        <div class="container">
+            <div class="row text-center mb-5 reveal-up">
+                <div class="col">
+                    <h2 class="display-4 font-playfair fw-bold">Make a <span class="text-gradient">Wish</span></h2>
+                    <div class="divider mx-auto my-3"></div>
+                    <p class="text-light-opacity font-outfit">Click the candles to blow them out â€” then celebrate!</p>
+                </div>
+            </div>
+            <div class="row justify-content-center reveal-up">
+                <div class="col-lg-8">
+                    <div class="cake-stage glass-panel text-center p-4 p-md-5">
+                        <div class="cake-scene cake-scene--hero mx-auto" id="mainCake">
+                            <div class="cake-plate"></div>
+                            <div class="cake-layer cake-layer--3"></div>
+                            <div class="cake-layer cake-layer--2"></div>
+                            <div class="cake-layer cake-layer--1">
+                                <span class="cake-sprinkle"></span>
+                                <span class="cake-sprinkle"></span>
+                                <span class="cake-sprinkle"></span>
+                                <span class="cake-sprinkle"></span>
+                            </div>
+                            <div class="cake-candles" id="cakeCandles">
+                                <button type="button" class="candle" data-candle="0" aria-label="Blow candle 1"><div class="flame"></div></button>
+                                <button type="button" class="candle" data-candle="1" aria-label="Blow candle 2"><div class="flame"></div></button>
+                                <button type="button" class="candle" data-candle="2" aria-label="Blow candle 3"><div class="flame"></div></button>
+                                <button type="button" class="candle" data-candle="3" aria-label="Blow candle 4"><div class="flame"></div></button>
+                                <button type="button" class="candle" data-candle="4" aria-label="Blow candle 5"><div class="flame"></div></button>
+                            </div>
+                        </div>
+                        <p class="font-pacifico cake-wish-text mt-4 mb-3" id="cakeWishText">✨ Light is shining on you today ✨</p>
+                        <button type="button" class="btn btn-custom font-outfit" id="blowAllCandles" disabled>
+                            <i class="bi bi-wind me-2"></i> Blow All Candles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5 section-padding">
+        <div class="container">
+            <div class="row text-center mb-5 reveal-up">
+                <div class="col">
+                    <h2 class="display-4 font-playfair fw-bold">About <span class="text-gradient">Her</span></h2>
+                    <div class="divider mx-auto my-3"></div>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-lg-5 mb-4 mb-lg-0 reveal-left">
+                    <div class="about-card p-5 glass-panel text-center">
+                        <i class="bi bi-stars text-accent display-4 mb-3"></i>
+                        <h3 class="font-playfair fw-bold h2 mb-3">Sujeena Shrestha</h3>
+                        <p class="text-light-opacity font-outfit mb-4">"I'm an ambivert with a passion for driving
+                            meaningful change and digital experiences."</p>
+                        <div class="social-links d-flex justify-content-center gap-3">
+                            <a href="https://www.linkedin.com/in/sujeena/" target="_blank" class="social-icon"><i
+                                    class="bi bi-linkedin"></i></a>
+                            <a href="https://www.facebook.com/Aneejus" target="_blank" class="social-icon"><i
+                                    class="bi bi-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7 px-lg-5 reveal-right">
+                    <h4 class="font-outfit fw-bold text-accent mb-3"><i class="bi bi-briefcase me-2"></i> Professional
+                        Journey</h4>
+                    <p class="lead font-outfit mb-4">Current <strong>ITS Employee Experience and Program
+                            Analyst</strong> at the Ontario Government.</p>
+                    <div class="timeline mt-4">
+                        <div class="timeline-item">
+                            <div class="timeline-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                            <div class="timeline-content">
+                                <h5 class="fw-bold font-outfit mb-1">PG in Project Management IT</h5>
+                                <p class="text-muted small mb-0">Seneca Polytechnic</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon"><i class="bi bi-award-fill"></i></div>
+                            <div class="timeline-content">
+                                <h5 class="fw-bold font-outfit mb-1">Digital & Social Media Marketing Graduate</h5>
+                                <p class="text-muted small mb-0">Seneca Polytechnic</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio / Expertise Section -->
+    <section id="portfolio" class="py-5 section-padding bg-dark-secondary">
+        <div class="container">
+            <div class="row text-center mb-5 reveal-up">
+                <div class="col">
+                    <h2 class="display-4 font-playfair fw-bold">Her <span class="text-gradient">Superpowers</span></h2>
+                    <div class="divider mx-auto my-3"></div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4 reveal-up" style="transition-delay: 100ms">
+                    <div class="feature-card glass-panel p-4 h-100">
+                        <div class="icon-box mb-4"><i class="bi bi-people-fill"></i></div>
+                        <h4 class="font-outfit fw-bold mb-3">Employee Experience</h4>
+                        <p class="text-light-opacity small">Analyzing and enhancing the employee journey within IT
+                            services, ensuring seamless program delivery at the Ontario Government.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal-up" style="transition-delay: 200ms">
+                    <div class="feature-card glass-panel p-4 h-100">
+                        <div class="icon-box mb-4"><i class="bi bi-diagram-3-fill"></i></div>
+                        <h4 class="font-outfit fw-bold mb-3">IT Project Management</h4>
+                        <p class="text-light-opacity small">Equipped with a PG from Seneca to manage complex technical
+                            projects from initiation to successful closure.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 reveal-up" style="transition-delay: 300ms">
+                    <div class="feature-card glass-panel p-4 h-100">
+                        <div class="icon-box mb-4"><i class="bi bi-megaphone-fill"></i></div>
+                        <h4 class="font-outfit fw-bold mb-3">Digital Marketing</h4>
+                        <p class="text-light-opacity small">Trained in Digital & Social Media Marketing, leveraging
+                            creativity and data to drive engagement.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-5 section-padding bg-dark-secondary">
+        <div class="container">
+            <div class="row text-center mb-5 reveal-up">
+                <div class="col">
+                    <h2 class="display-4 font-playfair fw-bold">Memories & <span class="text-gradient">Moments</span></h2>
+                    <div class="divider mx-auto my-3"></div>
+                    <p class="text-light-opacity font-outfit mt-3">A collection of beautiful birthday moments.</p>
+                </div>
+            </div>
+            
+            <!-- Masonry Grid for Photos -->
+            <div class="row g-4" id="gallery-container">
+                <!-- JS will inject gallery images here -->
+                <div class="col-12 text-center text-muted font-outfit small gallery-placeholder">
+                    <p class="mb-2"><i>Photos load from the <code>gallery</code> folder.</i></p>
+                    <p class="mb-0 small">Facebook: save photos to <code>facebook-import</code>, then run <code>import-facebook-photos.ps1</code>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Messages Section -->
+    <section id="messages" class="wall-of-love section-padding">
+        <div class="wall-board-bg" aria-hidden="true"></div>
+        <div class="container position-relative z-1">
+            <div class="row text-center mb-5 reveal-up">
+                <div class="col">
+                    <h2 class="display-4 font-playfair fw-bold">Wall of <span class="text-gradient">Love</span></h2>
+                    <span class="wall-tag font-outfit d-inline-block mb-2"><i class="bi bi-heart-fill me-1"></i> For Sujeena</span>
+                    <p class="lead font-outfit mt-2 text-light-opacity">Birthday wishes from friends &amp; family</p>
+                    <div class="wall-stats font-outfit mt-3" id="wallStats">
+                        <span><i class="bi bi-chat-heart"></i> <strong id="messageCount">0</strong> messages</span>
+                        <span class="mx-2">·</span>
+                        <span><i class="bi bi-camera-fill"></i> <strong id="photoCount">0</strong> photos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wall-preview-cta text-center reveal-up mb-5">
+                <i class="bi bi-pencil-heart text-accent display-4 mb-3 d-block"></i>
+                <h4 class="font-playfair fw-bold mb-2">Want to leave a message?</h4>
+                <p class="font-outfit text-light-opacity mb-4 mx-auto" style="max-width: 480px;">
+                    Use the Wall of Love page to write your birthday wish and upload a photo.
+                </p>
+                <a href="wall-of-love.html" class="btn btn-custom btn-lg font-outfit shadow-glow me-2 mb-2">
+                    <i class="bi bi-send-heart-fill me-2"></i> Write a Message
+                </a>
+                <a href="wall-of-love.html#write" class="btn btn-outline-custom btn-lg font-outfit mb-2">View Full Wall</a>
+            </div>
+
+            <div class="wall-filters reveal-up d-flex flex-wrap justify-content-center gap-2 mb-4" id="wallFilters">
+                <button type="button" class="wall-filter-btn active" data-filter="all">All</button>
+                <button type="button" class="wall-filter-btn" data-filter="Family"><i class="bi bi-house-heart me-1"></i> Family</button>
+                <button type="button" class="wall-filter-btn" data-filter="Friend"><i class="bi bi-people-fill me-1"></i> Friends</button>
+                <button type="button" class="wall-filter-btn" data-filter="Colleague"><i class="bi bi-briefcase-fill me-1"></i> Colleagues</button>
+            </div>
+            <div id="wallEmpty" class="wall-empty d-none"></div>
+            <div class="love-wall" id="messages-container"></div>
+        </div>
+    </section>
+
+    <!-- Message form lives on wall-of-love.html -->
+
+
+    <!-- Image Viewer Modal (Lightbox) -->
+    <div class="modal fade" id="imageViewerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center pt-0">
+                    <img src="" id="fullViewImage" class="img-fluid rounded shadow-lg mb-3" style="max-height: 65vh; object-fit: contain;">
+                    <p id="fullViewMessage" class="lightbox-message font-playfair d-none"></p>
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                        <h4 id="fullViewName" class="font-outfit text-dark mb-0"></h4>
+                        <span id="fullViewBadge" class="badge"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Birthday Wish Reveal Modal -->
+    <div class="modal fade" id="wishRevealModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content wish-modal border-0 shadow-lg">
+                <div class="modal-body text-center p-5">
+                    <div class="wish-modal-icon mb-3">🎂🎈</div>
+                    <h3 class="font-pacifico text-gradient display-6 mb-3" id="wishRevealTitle">Happy Birthday!</h3>
+                    <p class="font-outfit lead mb-4" id="wishRevealBody"></p>
+                    <button type="button" class="btn btn-custom font-outfit" data-bs-dismiss="modal">Thank you! 💛</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 border-top border-secondary border-opacity-25 mt-5">
+        <div class="container">
+            <p class="mb-0 font-outfit small text-light-opacity">Made with <i class="bi bi-heart-fill text-danger"></i>
+                for Sujeena's Birthday. &copy; 2026</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+    <script src="wall-of-love.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall of Love — Message Sujeena</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-bs-theme="light" data-wall-page="standalone">
+    <div id="sparkle-layer" aria-hidden="true"></div>
+
+    <nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+        <div class="container">
+            <a class="navbar-brand font-playfair" href="index.html">S.S</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wallNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="wallNav">
+                <ul class="navbar-nav align-items-lg-center gap-lg-2">
+                    <!-- <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house me-1"></i> Birthday Site</a></li> -->
+                    <li class="nav-item"><a class="nav-link active" href="wall-of-love.html">Wall of Love</a></li>
+                    <li class="nav-item">
+                        <a href="#write" class="btn btn-custom btn-sm ms-lg-2">Write Message</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="wall-page-hero">
+        <div class="container text-center position-relative z-1">
+            <span class="wall-tag font-outfit"><i class="bi bi-heart-fill me-1"></i> For Sujeena's Birthday</span>
+            <h1 class="display-4 font-playfair fw-bold mt-3 mb-2">Wall of <span class="text-gradient">Love</span></h1>
+            <p class="lead font-outfit text-light-opacity mx-auto wall-hero-lead">
+                Friends &amp; family — leave a birthday wish and photo for Sujeena. Your message appears on the wall
+                instantly.
+            </p>
+            <div class="wall-stats font-outfit mt-3" id="wallStats">
+                <span><i class="bi bi-chat-heart"></i> <strong id="messageCount">0</strong> messages</span>
+                <span class="mx-2">·</span>
+                <span><i class="bi bi-camera-fill"></i> <strong id="photoCount">0</strong> photos</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="wall-page-main">
+        <div class="wall-board-bg" aria-hidden="true"></div>
+        <div class="container position-relative z-1">
+            <div id="submitSuccess" class="submit-success-banner d-none" role="status">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span>Your message was pinned! Thank you for celebrating Sujeena.</span>
+            </div>
+
+            <div class="row g-4 g-xl-5">
+                <!-- Submit form -->
+                <div class="col-lg-5">
+                    <div id="write" class="wall-form-card glass-panel p-4 p-md-5 sticky-form">
+                        <div class="wall-form-card-header mb-4">
+                            <h2 class="font-playfair fw-bold h3 mb-1" id="formPanelTitle">Pin Your Message</h2>
+                            <p class="font-outfit small text-light-opacity mb-0" id="formPanelSubtitle">Fill in the form
+                                below — it only takes a minute!</p>
+                        </div>
+                        <form id="messageForm" novalidate>
+                            <input type="hidden" id="editingMessageId" value="">
+                            <div id="formErrorsSummary" class="form-errors-summary d-none" role="alert"></div>
+
+                            <div class="mb-3">
+                                <label for="senderName" class="form-label font-outfit small fw-semibold">Your Name <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control custom-input" id="senderName" required
+                                    placeholder="Who's writing?" minlength="2" maxlength="50" autocomplete="name">
+                                <div class="field-error font-outfit" id="senderNameError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="senderRelation" class="form-label font-outfit small fw-semibold">You are
+                                    her... <span class="text-danger">*</span></label>
+                                <select class="form-select custom-input" id="senderRelation" required>
+                                    <option value="" disabled selected>Choose one...</option>
+                                    <option value="Family">Family</option>
+                                    <option value="Friend">Friend</option>
+                                    <option value="Colleague">Colleague</option>
+                                </select>
+                                <div class="field-error font-outfit" id="senderRelationError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="senderMessage" class="form-label font-outfit small fw-semibold">Birthday
+                                    Message <span class="text-danger">*</span></label>
+                                <textarea class="form-control custom-input" id="senderMessage" rows="5" required
+                                    minlength="10" maxlength="500"
+                                    placeholder="Write something heartfelt for Sujeena..."></textarea>
+                                <div class="d-flex justify-content-between align-items-start mt-1 gap-2">
+                                    <div class="field-error font-outfit mb-0 flex-grow-1" id="senderMessageError"></div>
+                                    <small class="text-muted font-outfit flex-shrink-0"><span
+                                            id="charCount">0</span>/500</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label font-outfit small fw-semibold">Add a Photo <span
+                                        class="text-muted fw-normal">(optional)</span></label>
+                                <div class="photo-dropzone" id="photoDropzone">
+                                    <input type="file" id="senderPhoto"
+                                        accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+                                    <div id="photoPreviewEmpty" class="photo-dropzone-inner">
+                                        <i class="bi bi-cloud-arrow-up display-4 text-accent mb-2"></i>
+                                        <p class="font-outfit mb-1 fw-semibold">Drop a photo or click to browse</p>
+                                        <span class="badge rounded-pill bg-light text-dark font-outfit">JPG · PNG · max
+                                            5MB</span>
+                                    </div>
+                                    <div id="photoPreviewFilled" class="photo-preview-filled d-none">
+                                        <img id="photoPreviewImg" src="" alt="Preview">
+                                        <button type="button" class="btn btn-sm btn-remove-photo" id="removePhotoBtn"
+                                            aria-label="Remove photo">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="field-error font-outfit" id="senderPhotoError"></div>
+                                <div id="removePhotoWrap" class="form-check mt-2 d-none">
+                                    <input class="form-check-input" type="checkbox" id="removePhotoCheck">
+                                    <label class="form-check-label font-outfit small" for="removePhotoCheck">Remove
+                                        current photo</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-custom w-100 font-outfit py-3" id="submitMessageBtn">
+                                <i class="bi bi-send-heart-fill me-2"></i> Pin to Wall of Love
+                            </button>
+                            <button type="button" class="btn btn-outline-custom w-100 font-outfit mt-2 d-none"
+                                id="cancelEditBtn">
+                                Cancel edit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Messages wall -->
+                <div class="col-lg-7">
+                    <div
+                        class="wall-feed-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                        <h2 class="font-playfair fw-bold h4 mb-0">All Messages</h2>
+                        <div class="wall-filters d-flex flex-wrap gap-2" id="wallFilters">
+                            <button type="button" class="wall-filter-btn active" data-filter="all">All</button>
+                            <button type="button" class="wall-filter-btn" data-filter="Family">Family</button>
+                            <button type="button" class="wall-filter-btn" data-filter="Friend">Friends</button>
+                            <button type="button" class="wall-filter-btn" data-filter="Colleague">Colleagues</button>
+                        </div>
+                    </div>
+
+                    <div id="wallEmpty" class="wall-empty text-center">
+                        <div class="wall-empty-pin">📌</div>
+                        <h4 class="font-playfair fw-bold mb-2">No messages yet</h4>
+                        <p class="font-outfit text-light-opacity mb-3">Be the first to pin a birthday wish for Sujeena!
+                        </p>
+                        <a href="#write" class="btn btn-custom font-outfit">
+                            <i class="bi bi-pencil-square me-2"></i> Write the first message
+                        </a>
+                    </div>
+
+                    <div class="love-wall love-wall--page" id="messages-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-4 border-top border-secondary border-opacity-25">
+        <div class="container">
+            <p class="mb-2 font-outfit small text-light-opacity">
+                <a href="index.html" class="text-accent text-decoration-none">← Back to Sujeena's Birthday Site</a>
+            </p>
+            <p class="mb-0 font-outfit small text-light-opacity">Made with <i class="bi bi-heart-fill text-danger"></i>
+                for Sujeena · 2026</p>
+        </div>
+    </footer>
+
+    <!-- Delete confirmation -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content wall-modal border-0 shadow-lg">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-trash3 text-danger display-4 mb-3"></i>
+                    <h5 class="font-playfair fw-bold mb-2">Delete your post?</h5>
+                    <p class="font-outfit small text-light-opacity mb-4">This cannot be undone.</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary font-outfit"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger font-outfit" id="confirmDeleteBtn">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image lightbox -->
+    <div class="modal fade" id="imageViewerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center pt-0">
+                    <img src="" id="fullViewImage" class="img-fluid rounded shadow-lg mb-3"
+                        style="max-height: 65vh; object-fit: contain;">
+                    <p id="fullViewMessage" class="lightbox-message font-playfair d-none"></p>
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                        <h4 id="fullViewName" class="font-outfit text-dark mb-0"></h4>
+                        <span id="fullViewBadge" class="badge"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="wall-of-love.js"></script>
+    <script src="wall-page.js"></script>
+</body>
+
+</html>
